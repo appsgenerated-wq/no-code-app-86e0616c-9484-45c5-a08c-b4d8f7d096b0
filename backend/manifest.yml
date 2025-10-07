@@ -1,0 +1,105 @@
+name: LunarMonkeys
+
+entities:
+  User:
+    authenticable: true
+    properties:
+      - name
+      - name: email
+        type: email
+      - name: role
+        type: choice
+        options:
+          values: [Scientist, Observer]
+        default: Observer
+    policies:
+      create:
+        - access: admin
+      read:
+        - access: restricted
+          allow: User
+          condition: self
+      update:
+        - access: restricted
+          allow: User
+          condition: self
+      delete:
+        - access: admin
+      signup:
+        - access: public
+
+  AstroPrimate:
+    properties:
+      - name: name
+        type: string
+      - name: species
+        type: choice
+        options:
+          values: [Chimpanzee, Rhesus Macaque, Squirrel Monkey]
+        default: Chimpanzee
+      - name: status
+        type: choice
+        options:
+          values: ['In Training', Deployed, Retired]
+        default: 'In Training'
+      - name: avatar
+        type: image
+    belongsTo:
+      - name: handler
+        entity: User
+    policies:
+      create:
+        - access: restricted
+          allow: User
+      read:
+        - access: public
+      update:
+        - access: restricted
+          allow: User
+          condition: self
+      delete:
+        - access: restricted
+          allow: User
+          condition: self
+
+  Discovery:
+    properties:
+      - name: title
+        type: string
+      - name: description
+        type: text
+      - name: importance
+        type: choice
+        options:
+          values: [Minor, Significant, Groundbreaking]
+        default: Minor
+      - name: proofDocument
+        type: file
+    belongsTo:
+      - name: primate
+        entity: AstroPrimate
+      - name: scientist
+        entity: User
+    policies:
+      create:
+        - access: restricted
+          allow: User
+      read:
+        - access: public
+      update:
+        - access: restricted
+          allow: User
+          condition: self
+      delete:
+        - access: restricted
+          allow: User
+          condition: self
+
+
+# Health check endpoint for connection testing
+endpoints:
+  health:
+    path: /api/health
+    method: GET
+    policies: []
+    handler: healthCheck
